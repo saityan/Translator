@@ -5,11 +5,11 @@ import androidx.appcompat.app.AppCompatActivity
 import geekbrains.ru.translator.model.data.AppState
 import geekbrains.ru.translator.presenter.Presenter
 
-abstract class BaseActivity<T : AppState> : AppCompatActivity(), View {
+abstract class BaseActivity<T : AppState> : AppCompatActivity(), ViewInterface {
 
-    protected lateinit var presenter: Presenter<T, View>
+    protected lateinit var presenter: Presenter<T, ViewInterface>
 
-    protected abstract fun createPresenter(): Presenter<T, View>
+    protected abstract fun createPresenter(): Presenter<T, ViewInterface>
 
     abstract override fun renderData(appState: AppState)
 

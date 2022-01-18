@@ -1,6 +1,6 @@
 package geekbrains.ru.translator.view.main
 
-import com.anikin.aleksandr.simplevocabulary.viewmodel.Interactor
+import geekbrains.ru.translator.presenter.Interactor
 import geekbrains.ru.translator.model.data.AppState
 import geekbrains.ru.translator.model.data.DataModel
 import geekbrains.ru.translator.model.repository.Repository

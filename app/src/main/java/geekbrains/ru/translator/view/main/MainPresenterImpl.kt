@@ -6,11 +6,11 @@ import geekbrains.ru.translator.model.datasource.DataSourceRemote
 import geekbrains.ru.translator.model.repository.RepositoryImplementation
 import geekbrains.ru.translator.presenter.Presenter
 import geekbrains.ru.translator.rx.SchedulerProvider
-import geekbrains.ru.translator.view.base.View
+import geekbrains.ru.translator.view.base.ViewInterface
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
 
-class MainPresenterImpl<T : AppState, V : View>(
+class MainPresenterImpl<T : AppState, V : ViewInterface>(
     private val interactor: MainInteractor = MainInteractor(
         RepositoryImplementation(DataSourceRemote()),
         RepositoryImplementation(DataSourceLocal())

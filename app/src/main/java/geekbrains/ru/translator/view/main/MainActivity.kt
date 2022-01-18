@@ -11,7 +11,7 @@ import geekbrains.ru.translator.model.data.AppState
 import geekbrains.ru.translator.model.data.DataModel
 import geekbrains.ru.translator.presenter.Presenter
 import geekbrains.ru.translator.view.base.BaseActivity
-import geekbrains.ru.translator.view.base.View
+import geekbrains.ru.translator.view.base.ViewInterface
 import geekbrains.ru.translator.view.main.adapter.MainAdapter
 
 class MainActivity : BaseActivity<AppState>() {
@@ -26,7 +26,7 @@ class MainActivity : BaseActivity<AppState>() {
             }
         }
 
-    override fun createPresenter(): Presenter<AppState, View> {
+    override fun createPresenter(): Presenter<AppState, ViewInterface> {
         return MainPresenterImpl()
     }
 
