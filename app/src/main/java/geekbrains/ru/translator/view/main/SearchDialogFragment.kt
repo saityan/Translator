@@ -1,5 +1,6 @@
 package geekbrains.ru.translator.view.main
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -18,8 +19,8 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
     private val textWatcher = object : TextWatcher {
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            if (binding.searchEditText.text != null && !binding.searchEditText.text.toString()
-                    .isEmpty()
+            if (binding.searchEditText.text != null &&
+                !binding.searchEditText.text.toString().isEmpty()
             ) {
                 binding.searchButtonTextview.isEnabled = true
                 binding.clearTextImageview.visibility = View.VISIBLE
@@ -39,6 +40,11 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
             onSearchClickListener?.onClick(binding.searchEditText.text.toString())
             dismiss()
         }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        onSearchClickListener = context as OnSearchClickListener
+    }
 
     internal fun setOnSearchClickListener(listener: OnSearchClickListener) {
         onSearchClickListener = listener

@@ -14,7 +14,7 @@ import geekbrains.ru.translator.view.base.BaseActivity
 import geekbrains.ru.translator.view.base.ViewInterface
 import geekbrains.ru.translator.view.main.adapter.MainAdapter
 
-class MainActivity : BaseActivity<AppState>() {
+class MainActivity : BaseActivity<AppState>(), SearchDialogFragment.OnSearchClickListener {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -36,12 +36,6 @@ class MainActivity : BaseActivity<AppState>() {
         setContentView(binding.root)
         binding.searchFab.setOnClickListener {
             val searchDialogFragment = SearchDialogFragment.newInstance()
-            searchDialogFragment.setOnSearchClickListener(object :
-                SearchDialogFragment.OnSearchClickListener {
-                override fun onClick(searchWord: String) {
-                    presenter.getData(searchWord, true)
-                }
-            })
             searchDialogFragment.show(supportFragmentManager, BOTTOM_SHEET_FRAGMENT_DIALOG_TAG)
         }
     }
@@ -110,5 +104,9 @@ class MainActivity : BaseActivity<AppState>() {
     companion object {
         private const val BOTTOM_SHEET_FRAGMENT_DIALOG_TAG =
             "74a54328-5d62-46bf-ab6b-cbf5fgt0-092395"
+    }
+
+    override fun onClick(searchWord: String) {
+        presenter.getData(searchWord, true)
     }
 }
