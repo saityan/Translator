@@ -46,10 +46,6 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
         onSearchClickListener = context as OnSearchClickListener
     }
 
-    internal fun setOnSearchClickListener(listener: OnSearchClickListener) {
-        onSearchClickListener = listener
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -66,11 +62,6 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
         addOnClearClickListener()
     }
 
-    override fun onDestroyView() {
-        onSearchClickListener = null
-        super.onDestroyView()
-    }
-
     private fun addOnClearClickListener() {
         binding.clearTextImageview.setOnClickListener {
             binding.searchEditText.setText("")
@@ -78,8 +69,17 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
-    interface OnSearchClickListener {
+    override fun onDestroy() {
+        _binding = null
+        super.onDestroy()
+    }
 
+    override fun onDestroyView() {
+        onSearchClickListener = null
+        super.onDestroyView()
+    }
+
+    interface OnSearchClickListener {
         fun onClick(searchWord: String)
     }
 

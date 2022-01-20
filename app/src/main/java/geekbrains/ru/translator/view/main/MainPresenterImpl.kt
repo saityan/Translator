@@ -35,13 +35,21 @@ class MainPresenterImpl<T : AppState, V : ViewInterface>(
     }
 
     override fun getData(word: String, isOnline: Boolean) {
-        compositeDisposable.add(
-            interactor.getData(word, isOnline)
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .doOnSubscribe { currentView?.renderData(AppState.Loading(null)) }
-                .subscribeWith(getObserver())
-        )
+        val check = checkData(word)
+        check?.let {
+            if (check) {
+                compositeDisposable.add(
+                    interactor.getData(word, isOnline)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .doOnSubscribe { currentView?.renderData(AppState.Loading(null)) }
+                        .subscribeWith(getObserver())
+                )
+            }
+            else currentView?.showError(
+            "Пожалуйсте, введите слово, состоящее по крайней мере из двух символов (разрешены только латинские буквы)"
+            )
+        }
     }
 
     private fun getObserver(): DisposableObserver<AppState> {
@@ -59,4 +67,6 @@ class MainPresenterImpl<T : AppState, V : ViewInterface>(
             }
         }
     }
+
+    override fun checkData(word: String) : Boolean? = currentView?.checkData(word)
 }

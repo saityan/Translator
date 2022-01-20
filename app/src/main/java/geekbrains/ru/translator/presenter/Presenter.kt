@@ -9,4 +9,6 @@ interface Presenter<T : AppState, V : ViewInterface> {
     fun detachView(view: V)
 
     fun getData(word: String, isOnline: Boolean)
+
+    fun checkData (word: String) : Boolean?
 }

@@ -40,6 +40,13 @@ class MainActivity : BaseActivity<AppState>(), SearchDialogFragment.OnSearchClic
         }
     }
 
+    override fun checkData(word: String) : Boolean =
+        (word.length >= 2 && word.matches("^[a-zA-Z]+$".toRegex()))
+
+    override fun showError(error: String) {
+        showErrorScreen(error)
+    }
+
     override fun renderData(appState: AppState) {
         when (appState) {
             is AppState.Success -> {
@@ -79,7 +86,7 @@ class MainActivity : BaseActivity<AppState>(), SearchDialogFragment.OnSearchClic
         showViewError()
         binding.errorTextview.text = error ?: getString(R.string.undefined_error)
         binding.reloadButton.setOnClickListener {
-            presenter.getData("hi", true)
+            presenter.getData("error", true)
         }
     }
 
