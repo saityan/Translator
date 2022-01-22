@@ -4,6 +4,7 @@
     <string name="reload_button">Reload</string>
     <string name="undefined_error">Undefined error</string>
     <string name="empty_server_response_on_success">No such word in the vocabulary</string>
+    <string name="incorrect_word">Please note that only latin characters are allowed (two symbols at least)</string>
     <string name="button_search">Search</string>
     <string name="search_hint">New word</string>
     <string name="delete_description">X</string>

@@ -121,6 +121,6 @@ class MainActivity : BaseActivity<AppState>(), SearchDialogFragment.OnSearchClic
     override fun onClick(searchWord: String) {
         if (checkData(searchWord))
             model.getData(searchWord, true).observe(this@MainActivity, observer)
-        else showError("Please note that only latin characters are allowed (two symbols at least)")
+        else showError(getString(R.string.incorrect_word))
     }
 }
