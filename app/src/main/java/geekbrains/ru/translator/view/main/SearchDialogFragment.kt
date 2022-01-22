@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import geekbrains.ru.translator.databinding.SearchDialogFragmentBinding
+import geekbrains.ru.translator.utils.getEmptyString
 
 class SearchDialogFragment : BottomSheetDialogFragment() {
 
@@ -41,13 +42,13 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
             dismiss()
         }
 
+    internal fun setOnSearchClickListener(listener: OnSearchClickListener) {
+        onSearchClickListener = listener
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         onSearchClickListener = context as OnSearchClickListener
-    }
-
-    internal fun setOnSearchClickListener(listener: OnSearchClickListener) {
-        onSearchClickListener = listener
     }
 
     override fun onCreateView(
@@ -66,11 +67,6 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
         addOnClearClickListener()
     }
 
-    override fun onDestroyView() {
-        onSearchClickListener = null
-        super.onDestroyView()
-    }
-
     private fun addOnClearClickListener() {
         binding.clearTextImageview.setOnClickListener {
             binding.searchEditText.setText("")
@@ -78,8 +74,17 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
-    interface OnSearchClickListener {
+    override fun onDestroy() {
+        _binding = null
+        super.onDestroy()
+    }
 
+    override fun onDestroyView() {
+        onSearchClickListener = null
+        super.onDestroyView()
+    }
+
+    interface OnSearchClickListener {
         fun onClick(searchWord: String)
     }
 
