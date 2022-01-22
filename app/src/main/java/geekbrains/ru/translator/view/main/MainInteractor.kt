@@ -1,9 +1,9 @@
 package geekbrains.ru.translator.view.main
 
-import geekbrains.ru.translator.presenter.Interactor
 import geekbrains.ru.translator.model.data.AppState
 import geekbrains.ru.translator.model.data.DataModel
 import geekbrains.ru.translator.model.repository.Repository
+import geekbrains.ru.translator.viewmodel.Interactor
 import io.reactivex.Observable
 
 class MainInteractor(
