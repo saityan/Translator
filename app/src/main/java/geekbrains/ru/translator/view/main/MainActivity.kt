@@ -74,6 +74,8 @@ class MainActivity : BaseActivity<AppState, MainInteractor>(), SearchDialogFragm
     private fun checkData(word: String) : Boolean =
         (word.length >= 2 && word.matches("^[a-zA-Z]+$".toRegex()))
 
+    private fun showMessage (title : String, message : String) = showAlertDialog(title, message)
+
     override fun renderData(appState: AppState) {
         when (appState) {
             is AppState.Success -> {
@@ -82,7 +84,7 @@ class MainActivity : BaseActivity<AppState, MainInteractor>(), SearchDialogFragm
                 if (data.isNullOrEmpty()) {
                     showAlertDialog(
                         getString(R.string.dialog_tittle_sorry),
-                        getString(R.string.incorrect_word)
+                        getString(R.string.empty_server_response_on_success)
                     )
                 } else {
                     adapter.setData(data)
@@ -123,6 +125,9 @@ class MainActivity : BaseActivity<AppState, MainInteractor>(), SearchDialogFragm
         if (checkData(searchWord)) {
             if (isOnline(applicationContext)) model.getData(searchWord, isNetworkAvailable)
             else showNoInternetConnectionDialog()
-        }
+        } else showMessage(
+            getString(R.string.dialog_tittle_sorry),
+            getString(R.string.incorrect_word)
+        )
     }
 }
