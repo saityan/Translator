@@ -2,6 +2,8 @@ package geekbrains.ru.translator.model.datasource
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import geekbrains.ru.translator.model.data.DataModel
+import geekbrains.ru.translator.model.data.api.ApiService
+import geekbrains.ru.translator.model.data.api.BaseInterceptor
 import io.reactivex.Observable
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
