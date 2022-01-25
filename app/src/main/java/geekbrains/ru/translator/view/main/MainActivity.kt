@@ -5,6 +5,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,6 +27,8 @@ class MainActivity : BaseActivity<AppState, MainInteractor>(), SearchDialogFragm
     private lateinit var binding: ActivityMainBinding
 
     override lateinit var model: MainViewModel
+
+    private val savedState: SavedStateViewModel by viewModels()
 
     private val adapter: MainAdapter by lazy { MainAdapter(onListItemClickListener) }
 
@@ -69,6 +72,11 @@ class MainActivity : BaseActivity<AppState, MainInteractor>(), SearchDialogFragm
         binding.searchFab.setOnClickListener(fabClickListener)
         binding.mainActivityRecyclerview.layoutManager = LinearLayoutManager(applicationContext)
         binding.mainActivityRecyclerview.adapter = adapter
+
+        savedState.data.value?.let {
+            if (checkData(it) && isOnline(applicationContext))
+                model.getData(it, true)
+        }
     }
 
     private fun checkData(word: String) : Boolean =
@@ -123,6 +131,7 @@ class MainActivity : BaseActivity<AppState, MainInteractor>(), SearchDialogFragm
 
     override fun onClick(searchWord: String) {
         if (checkData(searchWord)) {
+            savedState.setSearchWord(searchWord)
             if (isOnline(applicationContext)) model.getData(searchWord, isNetworkAvailable)
             else showNoInternetConnectionDialog()
         } else showMessage(
