@@ -1,22 +1,21 @@
 package geekbrains.ru.translator.view.main
 
+import geekbrains.ru.translator.presenter.Interactor
 import geekbrains.ru.translator.model.data.AppState
 import geekbrains.ru.translator.model.data.DataModel
 import geekbrains.ru.translator.model.repository.Repository
-import geekbrains.ru.translator.viewmodel.Interactor
+import io.reactivex.Observable
 
 class MainInteractor(
-    private val repositoryRemote: Repository<List<DataModel>>,
-    private val repositoryLocal: Repository<List<DataModel>>
+    private val remoteRepository: Repository<List<DataModel>>,
+    private val localRepository: Repository<List<DataModel>>
 ) : Interactor<AppState> {
 
-    override suspend fun getData(word: String, fromRemoteSource: Boolean): AppState {
-        return AppState.Success(
-            if (fromRemoteSource) {
-                repositoryRemote
-            } else {
-                repositoryLocal
-            }.getData(word)
-        )
+    override fun getData(word: String, fromRemoteSource: Boolean): Observable<AppState> {
+        return if (fromRemoteSource) {
+            remoteRepository.getData(word).map { AppState.Success(it) }
+        } else {
+            localRepository.getData(word).map { AppState.Success(it) }
+        }
     }
 }

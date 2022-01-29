@@ -1,50 +1,24 @@
 package geekbrains.ru.translator.view.main
 
 import android.os.Bundle
-import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import geekbrains.ru.translator.R
 import geekbrains.ru.translator.databinding.ActivityMainBinding
 import geekbrains.ru.translator.model.data.AppState
 import geekbrains.ru.translator.model.data.DataModel
-import geekbrains.ru.translator.utils.network.isOnline
+import geekbrains.ru.translator.presenter.Presenter
 import geekbrains.ru.translator.view.base.BaseActivity
+import geekbrains.ru.translator.view.base.ViewInterface
 import geekbrains.ru.translator.view.main.adapter.MainAdapter
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : BaseActivity<AppState, MainInteractor>(), SearchDialogFragment.OnSearchClickListener {
+class MainActivity : BaseActivity<AppState>(), SearchDialogFragment.OnSearchClickListener {
 
     private lateinit var binding: ActivityMainBinding
 
-    override lateinit var model: MainViewModel
-
-    private val savedState: SavedStateViewModel by viewModels()
-
-    private val adapter: MainAdapter by lazy { MainAdapter(onListItemClickListener) }
-
-    private val fabClickListener: View.OnClickListener =
-        View.OnClickListener {
-            val searchDialogFragment = SearchDialogFragment.newInstance()
-            searchDialogFragment.setOnSearchClickListener(onSearchClickListener)
-            searchDialogFragment.show(supportFragmentManager, BOTTOM_SHEET_FRAGMENT_DIALOG_TAG)
-        }
-
-    private val onSearchClickListener: SearchDialogFragment.OnSearchClickListener =
-        object : SearchDialogFragment.OnSearchClickListener {
-            override fun onClick(searchWord: String) {
-                isNetworkAvailable = isOnline(applicationContext)
-                if (isNetworkAvailable) {
-                    model.getData(searchWord, isNetworkAvailable)
-                } else {
-                    showNoInternetConnectionDialog()
-                }
-            }
-        }
-
+    private var adapter: MainAdapter? = null
     private val onListItemClickListener: MainAdapter.OnListItemClickListener =
         object : MainAdapter.OnListItemClickListener {
             override fun onItemClick(data: DataModel) {
@@ -52,38 +26,43 @@ class MainActivity : BaseActivity<AppState, MainInteractor>(), SearchDialogFragm
             }
         }
 
+    override fun createPresenter(): Presenter<AppState, ViewInterface> {
+        return MainPresenterImpl()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        initViewModel()
-        initViews()
-
-        savedState.data.value?.let {
-            if (checkData(it) && isOnline(applicationContext))
-                model.getData(it, true)
+        binding.searchFab.setOnClickListener {
+            val searchDialogFragment = SearchDialogFragment.newInstance()
+            searchDialogFragment.show(supportFragmentManager, BOTTOM_SHEET_FRAGMENT_DIALOG_TAG)
         }
     }
 
-    private fun checkData(word: String) : Boolean =
+    override fun checkData(word: String) : Boolean =
         (word.length >= 2 && word.matches("^[a-zA-Z]+$".toRegex()))
 
-    private fun showMessage (title : String, message : String) = showAlertDialog(title, message)
+    override fun showError() {
+        showErrorScreen(getString(R.string.incorrect_word))
+    }
 
     override fun renderData(appState: AppState) {
         when (appState) {
             is AppState.Success -> {
-                showViewWorking()
-                val data = appState.data
-                if (data.isNullOrEmpty()) {
-                    showAlertDialog(
-                        getString(R.string.dialog_tittle_sorry),
-                        getString(R.string.empty_server_response_on_success)
-                    )
+                val dataModel = appState.data
+                if (dataModel == null || dataModel.isEmpty()) {
+                    showErrorScreen(getString(R.string.empty_server_response_on_success))
                 } else {
-                    adapter.setData(data)
+                    showViewSuccess()
+                    if (adapter == null) {
+                        binding.mainActivityRecyclerview.layoutManager =
+                            LinearLayoutManager(applicationContext)
+                        binding.mainActivityRecyclerview.adapter =
+                            MainAdapter(onListItemClickListener, dataModel)
+                    } else {
+                        adapter!!.setData(dataModel)
+                    }
                 }
             }
             is AppState.Loading -> {
@@ -98,33 +77,35 @@ class MainActivity : BaseActivity<AppState, MainInteractor>(), SearchDialogFragm
                 }
             }
             is AppState.Error -> {
-                showViewWorking()
-                showAlertDialog(getString(R.string.error_stub), appState.error.message)
+                showErrorScreen(appState.error.message)
             }
         }
     }
 
-    private fun initViewModel() {
-        if (binding.mainActivityRecyclerview.adapter != null) {
-            throw IllegalStateException("The ViewModel should be initialised first")
+    private fun showErrorScreen(error: String?) {
+        showViewError()
+        binding.errorTextview.text = error ?: getString(R.string.undefined_error)
+        binding.reloadButton.setOnClickListener {
+            presenter.getData("error", true)
         }
-        val viewModel: MainViewModel by viewModel()
-        model = viewModel
-        model.subscribe().observe(this@MainActivity, { renderData(it) })
     }
 
-    private fun initViews() {
-        binding.searchFab.setOnClickListener(fabClickListener)
-        binding.mainActivityRecyclerview.layoutManager = LinearLayoutManager(applicationContext)
-        binding.mainActivityRecyclerview.adapter = adapter
-    }
-
-    private fun showViewWorking() {
+    private fun showViewSuccess() {
+        binding.successLinearLayout.visibility = VISIBLE
         binding.loadingFrameLayout.visibility = GONE
+        binding.errorLinearLayout.visibility = GONE
     }
 
     private fun showViewLoading() {
+        binding.successLinearLayout.visibility = GONE
         binding.loadingFrameLayout.visibility = VISIBLE
+        binding.errorLinearLayout.visibility = GONE
+    }
+
+    private fun showViewError() {
+        binding.successLinearLayout.visibility = GONE
+        binding.loadingFrameLayout.visibility = GONE
+        binding.errorLinearLayout.visibility = VISIBLE
     }
 
     companion object {
@@ -133,13 +114,6 @@ class MainActivity : BaseActivity<AppState, MainInteractor>(), SearchDialogFragm
     }
 
     override fun onClick(searchWord: String) {
-        if (checkData(searchWord)) {
-            savedState.setSearchWord(searchWord)
-            if (isOnline(applicationContext)) model.getData(searchWord, isNetworkAvailable)
-            else showNoInternetConnectionDialog()
-        } else showMessage(
-            getString(R.string.dialog_tittle_sorry),
-            getString(R.string.incorrect_word)
-        )
+        presenter.getData(searchWord, true)
     }
 }

@@ -7,31 +7,26 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.textfield.TextInputEditText
-import geekbrains.ru.translator.R
 import geekbrains.ru.translator.databinding.SearchDialogFragmentBinding
-import geekbrains.ru.translator.utils.getEmptyString
-import kotlinx.android.synthetic.main.search_dialog_fragment.*
 
 class SearchDialogFragment : BottomSheetDialogFragment() {
 
-    private lateinit var searchEditText: TextInputEditText
-    private lateinit var clearTextImageView: ImageView
-    private lateinit var searchButton: TextView
+    private var _binding: SearchDialogFragmentBinding? = null
+    private val binding get() = _binding!!
     private var onSearchClickListener: OnSearchClickListener? = null
 
     private val textWatcher = object : TextWatcher {
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            if (searchEditText.text != null && !searchEditText.text.toString().isEmpty()) {
-                searchButton.isEnabled = true
-                clearTextImageView.visibility = View.VISIBLE
+            if (binding.searchEditText.text != null &&
+                !binding.searchEditText.text.toString().isEmpty()
+            ) {
+                binding.searchButtonTextview.isEnabled = true
+                binding.clearTextImageview.visibility = View.VISIBLE
             } else {
-                searchButton.isEnabled = false
-                clearTextImageView.visibility = View.GONE
+                binding.searchButtonTextview.isEnabled = false
+                binding.clearTextImageview.visibility = View.GONE
             }
         }
 
@@ -42,39 +37,41 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
 
     private val onSearchButtonClickListener =
         View.OnClickListener {
-            onSearchClickListener?.onClick(searchEditText.text.toString())
+            onSearchClickListener?.onClick(binding.searchEditText.text.toString())
             dismiss()
         }
-
-    internal fun setOnSearchClickListener(listener: OnSearchClickListener) {
-        onSearchClickListener = listener
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         onSearchClickListener = context as OnSearchClickListener
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.search_dialog_fragment, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = SearchDialogFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        searchEditText = search_edit_text
-        clearTextImageView = clear_text_imageview
-        searchButton = search_button_textview
-
-        searchButton.setOnClickListener(onSearchButtonClickListener)
-        searchEditText.addTextChangedListener(textWatcher)
+        binding.searchButtonTextview.setOnClickListener(onSearchButtonClickListener)
+        binding.searchEditText.addTextChangedListener(textWatcher)
         addOnClearClickListener()
     }
 
     private fun addOnClearClickListener() {
-        clearTextImageView.setOnClickListener {
-            searchEditText.setText(String.getEmptyString())
-            searchButton.isEnabled = false
+        binding.clearTextImageview.setOnClickListener {
+            binding.searchEditText.setText("")
+            binding.searchButtonTextview.isEnabled = false
         }
+    }
+
+    override fun onDestroy() {
+        _binding = null
+        super.onDestroy()
     }
 
     override fun onDestroyView() {
