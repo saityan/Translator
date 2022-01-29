@@ -35,19 +35,13 @@ class MainPresenterImpl<T : AppState, V : ViewInterface>(
     }
 
     override fun getData(word: String, isOnline: Boolean) {
-        val check = checkData(word)
-        check?.let {
-            if (check) {
-                compositeDisposable.add(
-                    interactor.getData(word, isOnline)
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
-                        .doOnSubscribe { currentView?.renderData(AppState.Loading(null)) }
-                        .subscribeWith(getObserver())
-                )
-            }
-            else currentView?.showError()
-        }
+        compositeDisposable.add(
+            interactor.getData(word, isOnline)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .doOnSubscribe { currentView?.renderData(AppState.Loading(null)) }
+                .subscribeWith(getObserver())
+        )
     }
 
     private fun getObserver(): DisposableObserver<AppState> {
@@ -65,6 +59,4 @@ class MainPresenterImpl<T : AppState, V : ViewInterface>(
             }
         }
     }
-
-    override fun checkData(word: String) : Boolean? = currentView?.checkData(word)
 }

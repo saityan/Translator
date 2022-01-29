@@ -40,13 +40,6 @@ class MainActivity : BaseActivity<AppState>(), SearchDialogFragment.OnSearchClic
         }
     }
 
-    override fun checkData(word: String) : Boolean =
-        (word.length >= 2 && word.matches("^[a-zA-Z]+$".toRegex()))
-
-    override fun showError() {
-        showErrorScreen(getString(R.string.incorrect_word))
-    }
-
     override fun renderData(appState: AppState) {
         when (appState) {
             is AppState.Success -> {

@@ -4,8 +4,4 @@ import geekbrains.ru.translator.model.data.AppState
 
 interface ViewInterface {
     fun renderData(appState: AppState)
-
-    fun checkData(word: String) : Boolean
-
-    fun showError()
 }
