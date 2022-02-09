@@ -1,46 +1,93 @@
 package geekbrains.ru.translator.utils
 
-import geekbrains.ru.translator.model.data.AppState
-import geekbrains.ru.translator.model.data.DataModel
-import geekbrains.ru.translator.model.data.Meanings
+import geekbrains.ru.model.data.AppState
+import geekbrains.ru.model.data.dto.SearchResultDto
+import geekbrains.ru.model.data.userdata.DataModel
+import geekbrains.ru.model.data.userdata.Meaning
+import geekbrains.ru.model.data.userdata.TranslatedMeaning
 
-fun parseSearchResults(state: AppState): AppState {
+fun mapSearchResultToResult(searchResults: List<SearchResultDto>): List<DataModel> {
+    return searchResults.map { searchResult ->
+        var meanings: List<Meaning> = listOf()
+        searchResult.meanings?.let {
+            //Check for null for HistoryScreen
+            meanings = it.map { meaningsDto ->
+                Meaning(
+                    TranslatedMeaning(meaningsDto?.translation?.translation ?: ""),
+                    meaningsDto?.imageUrl ?: ""
+                )
+            }
+        }
+        DataModel(searchResult.text ?: "", meanings)
+    }
+}
+
+fun parseOnlineSearchResults(data: AppState): AppState {
+    return AppState.Success(mapResult(data, true))
+}
+
+private fun mapResult(
+    data: AppState,
+    isOnline: Boolean
+): List<DataModel> {
     val newSearchResults = arrayListOf<DataModel>()
-    when (state) {
+    when (data) {
         is AppState.Success -> {
-            val searchResults = state.data
-            if (!searchResults.isNullOrEmpty()) {
-                for (searchResult in searchResults) {
-                    parseResult(searchResult, newSearchResults)
-                }
+            getSuccessResultData(data, isOnline, newSearchResults)
+        }
+    }
+    return newSearchResults
+}
+
+private fun getSuccessResultData(
+    data: AppState.Success,
+    isOnline: Boolean,
+    newSearchDataModels: ArrayList<DataModel>
+) {
+    val searchDataModels: List<DataModel> = data.data as List<DataModel>
+    if (searchDataModels.isNotEmpty()) {
+        if (isOnline) {
+            for (searchResult in searchDataModels) {
+                parseOnlineResult(searchResult, newSearchDataModels)
+            }
+        } else {
+            for (searchResult in searchDataModels) {
+                newSearchDataModels.add(
+                    DataModel(
+                        searchResult.text,
+                        arrayListOf()
+                    )
+                )
             }
         }
     }
-
-    return AppState.Success(newSearchResults)
 }
 
-private fun parseResult(dataModel: DataModel, newDataModels: ArrayList<DataModel>) {
-    if (!dataModel.text.isNullOrBlank() && !dataModel.meanings.isNullOrEmpty()) {
-        val newMeanings = arrayListOf<Meanings>()
-        for (meaning in dataModel.meanings) {
-            if (meaning.translation != null && !meaning.translation.translation.isNullOrBlank()) {
-                newMeanings.add(Meanings(meaning.translation, meaning.imageUrl))
-            }
-        }
+private fun parseOnlineResult(
+    searchDataModel: DataModel,
+    newSearchDataModels: ArrayList<DataModel>
+) {
+    if (searchDataModel.text.isNotBlank() && searchDataModel.meanings.isNotEmpty()) {
+        val newMeanings = arrayListOf<Meaning>()
+        newMeanings.addAll(searchDataModel.meanings.filter { it.translatedMeaning.translatedMeaning.isNotBlank() })
         if (newMeanings.isNotEmpty()) {
-            newDataModels.add(DataModel(dataModel.text, newMeanings))
+            newSearchDataModels.add(
+                DataModel(
+                    searchDataModel.text,
+                    newMeanings
+                )
+            )
         }
     }
 }
 
-fun convertMeaningsToString(meanings: List<Meanings>): String {
+fun convertMeaningsToSingleString(meanings: List<Meaning>): String {
     var meaningsSeparatedByComma = String()
     for ((index, meaning) in meanings.withIndex()) {
         meaningsSeparatedByComma += if (index + 1 != meanings.size) {
-            String.format("%s%s", meaning.translation?.translation, ", ")
+            String.format("%s%s", meaning.translatedMeaning.translatedMeaning, ", ")
         } else {
-            meaning.translation?.translation
+            meaning.translatedMeaning.translatedMeaning
         }
     }
     return meaningsSeparatedByComma
