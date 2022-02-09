@@ -1,21 +1,38 @@
 package geekbrains.ru.translator.di
 
-import geekbrains.ru.translator.model.data.DataModel
-import geekbrains.ru.translator.model.datasource.RetrofitImplementation
-import geekbrains.ru.translator.model.datasource.RoomDataBaseImplementation
-import geekbrains.ru.translator.model.repository.Repository
-import geekbrains.ru.translator.model.repository.RepositoryImplementation
+import androidx.room.Room
+import geekbrains.ru.history.view.history.HistoryActivity
+import geekbrains.ru.history.view.history.HistoryInteractor
+import geekbrains.ru.history.view.history.HistoryViewModel
+import geekbrains.ru.model.data.dto.SearchResultDto
+import geekbrains.ru.model.room.HistoryDataBase
+import geekbrains.ru.repository.*
+import geekbrains.ru.translator.view.main.MainActivity
 import geekbrains.ru.translator.view.main.MainInteractor
 import geekbrains.ru.translator.view.main.MainViewModel
+import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val application = module {
-    single<Repository<List<DataModel>>>(named(NAME_REMOTE)) { RepositoryImplementation(RetrofitImplementation()) }
-    single<Repository<List<DataModel>>>(named(NAME_LOCAL)) { RepositoryImplementation(RoomDataBaseImplementation()) }
+    single { Room.databaseBuilder(get(), HistoryDataBase::class.java, "HistoryDB").build() }
+    single { get<HistoryDataBase>().historyDao() }
+    single<Repository<List<SearchResultDto>>> { RepositoryImplementation(RetrofitImplementation()) }
+    single<RepositoryLocal<List<SearchResultDto>>> {
+        RepositoryImplementationLocal(RoomDataBaseImplementation(get()))
+    }
 }
 
 val mainScreen = module {
-    factory { MainInteractor(get(named(NAME_REMOTE)), get(named(NAME_LOCAL))) }
-    factory { MainViewModel(get()) }
+    scope(named<MainActivity>()) {
+        scoped { MainInteractor(get(), get()) }
+        viewModel { MainViewModel(get()) }
+    }
+}
+
+val historyScreen = module {
+    scope(named<HistoryActivity>()) {
+        scoped { HistoryInteractor(get(), get()) }
+        viewModel { HistoryViewModel(get()) }
+    }
 }

@@ -1,6 +1,5 @@
 package geekbrains.ru.translator.view.main
 
-import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,8 +11,7 @@ import android.widget.TextView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.textfield.TextInputEditText
 import geekbrains.ru.translator.R
-import geekbrains.ru.translator.databinding.SearchDialogFragmentBinding
-import geekbrains.ru.translator.utils.getEmptyString
+import geekbrains.ru.utils.getEmptyString
 import kotlinx.android.synthetic.main.search_dialog_fragment.*
 
 class SearchDialogFragment : BottomSheetDialogFragment() {
@@ -50,11 +48,6 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
         onSearchClickListener = listener
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        onSearchClickListener = context as OnSearchClickListener
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.search_dialog_fragment, container, false)
     }
@@ -70,6 +63,11 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
         addOnClearClickListener()
     }
 
+    override fun onDestroyView() {
+        onSearchClickListener = null
+        super.onDestroyView()
+    }
+
     private fun addOnClearClickListener() {
         clearTextImageView.setOnClickListener {
             searchEditText.setText(String.getEmptyString())
@@ -77,12 +75,8 @@ class SearchDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
-    override fun onDestroyView() {
-        onSearchClickListener = null
-        super.onDestroyView()
-    }
-
     interface OnSearchClickListener {
+
         fun onClick(searchWord: String)
     }
 
