@@ -13,7 +13,7 @@ import geekbrains.ru.model.data.userdata.DataModel
 import geekbrains.ru.utils.network.OnlineLiveData
 import geekbrains.ru.utils.ui.AlertDialogFragment
 
-private const val DIALOG_FRAGMENT_TAG = "74a54328-5d62-46bf-ab6b-cbf5d8c79522"
+private const val DIALOG_FRAGMENT_TAG = "5fd2a865-a533-4057-aea8-e05374943491"
 
 abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity() {
 
@@ -28,17 +28,17 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity
 
     private fun subscribeToNetworkChange() {
         OnlineLiveData(this).observe(
-            this@BaseActivity,
-            {
-                isNetworkAvailable = it
-                if (!isNetworkAvailable) {
-                    Toast.makeText(
-                        this@BaseActivity,
-                        R.string.dialog_message_device_is_offline,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            })
+            this@BaseActivity
+        ) {
+            isNetworkAvailable = it
+            if (!isNetworkAvailable) {
+                Toast.makeText(
+                    this@BaseActivity,
+                    R.string.dialog_message_device_is_offline,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
 
@@ -90,7 +90,7 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity
         )
     }
 
-    protected fun showAlertDialog(title: String?, message: String?) {
+    protected fun showAlertDialog(title: String, message: String?) {
         AlertDialogFragment.newInstance(title, message)
             .show(supportFragmentManager, DIALOG_FRAGMENT_TAG)
     }

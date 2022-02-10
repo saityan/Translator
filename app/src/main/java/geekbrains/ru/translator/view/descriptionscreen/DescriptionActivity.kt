@@ -56,21 +56,21 @@ class DescriptionActivity : AppCompatActivity() {
 
     private fun startLoadingOrShowError() {
         OnlineLiveData(this).observe(
-            this@DescriptionActivity,
-            {
-                if (it) {
-                    setData()
-                } else {
-                    AlertDialogFragment.newInstance(
-                        getString(R.string.dialog_title_device_is_offline),
-                        getString(R.string.dialog_message_device_is_offline)
-                    ).show(
-                        supportFragmentManager,
-                        DIALOG_FRAGMENT_TAG
-                    )
-                    stopRefreshAnimationIfNeeded()
-                }
-            })
+            this@DescriptionActivity
+        ) {
+            if (it) {
+                setData()
+            } else {
+                AlertDialogFragment.newInstance(
+                    getString(R.string.dialog_title_device_is_offline),
+                    getString(R.string.dialog_message_device_is_offline)
+                ).show(
+                    supportFragmentManager,
+                    DIALOG_FRAGMENT_TAG
+                )
+                stopRefreshAnimationIfNeeded()
+            }
+        }
     }
 
     private fun stopRefreshAnimationIfNeeded() {
@@ -98,11 +98,11 @@ class DescriptionActivity : AppCompatActivity() {
 
     companion object {
 
-        private const val DIALOG_FRAGMENT_TAG = "8c7dff51-9769-4f6d-bbee-a3896085e76e"
+        private const val DIALOG_FRAGMENT_TAG = "3ab3573f-e010-47c2-adc7-e46963ed5d23"
 
-        private const val WORD_EXTRA = "f76a288a-5dcc-43f1-ba89-7fe1d53f63b0"
-        private const val DESCRIPTION_EXTRA = "0eeb92aa-520b-4fd1-bb4b-027fbf963d9a"
-        private const val URL_EXTRA = "6e4b154d-e01f-4953-a404-639fb3bf7281"
+        private const val WORD_EXTRA = "dc7ca4ed-c8d9-4666-b5c7-9af225e839d9"
+        private const val DESCRIPTION_EXTRA = "8ebbb96f-b57b-4ed8-b562-532b9490c58f"
+        private const val URL_EXTRA = "2818a79c-2368-4548-b1ca-0910e237d014"
 
         fun getIntent(
             context: Context,

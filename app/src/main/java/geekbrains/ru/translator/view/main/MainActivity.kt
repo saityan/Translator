@@ -19,7 +19,7 @@ import geekbrains.ru.translator.view.main.adapter.MainAdapter
 import geekbrains.ru.utils.ui.viewById
 import org.koin.android.scope.currentScope
 
-private const val BOTTOM_SHEET_FRAGMENT_DIALOG_TAG = "74a54328-5d62-46bf-ab6b-cbf5fgt0-092395"
+private const val BOTTOM_SHEET_FRAGMENT_DIALOG_TAG = "8133f887-09ac-4bc7-aa48-5b538d171c26"
 
 class MainActivity : BaseActivity<AppState, MainInteractor>() {
 
