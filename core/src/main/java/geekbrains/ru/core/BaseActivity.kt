@@ -28,17 +28,17 @@ abstract class BaseActivity<T : AppState, I : Interactor<T>> : AppCompatActivity
 
     private fun subscribeToNetworkChange() {
         OnlineLiveData(this).observe(
-            this@BaseActivity,
-            {
-                isNetworkAvailable = it
-                if (!isNetworkAvailable) {
-                    Toast.makeText(
-                        this@BaseActivity,
-                        R.string.dialog_message_device_is_offline,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            })
+            this@BaseActivity
+        ) {
+            isNetworkAvailable = it
+            if (!isNetworkAvailable) {
+                Toast.makeText(
+                    this@BaseActivity,
+                    R.string.dialog_message_device_is_offline,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
 
