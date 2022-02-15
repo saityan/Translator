@@ -2,9 +2,6 @@ package geekbrains.ru.translator.view.descriptionscreen
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.RenderEffect
-import android.graphics.Shader
-import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ImageView
@@ -13,7 +10,7 @@ import coil.ImageLoader
 import coil.request.LoadRequest
 import geekbrains.ru.translator.R
 import geekbrains.ru.translator.databinding.ActivityDescriptionBinding
-import geekbrains.ru.utils.network.OnlineLiveData
+import geekbrains.ru.utils.network.isOnline
 import geekbrains.ru.utils.ui.AlertDialogFragment
 
 class DescriptionActivity : AppCompatActivity() {
@@ -58,21 +55,17 @@ class DescriptionActivity : AppCompatActivity() {
     }
 
     private fun startLoadingOrShowError() {
-        OnlineLiveData(this).observe(
-            this@DescriptionActivity
-        ) {
-            if (it) {
-                setData()
-            } else {
-                AlertDialogFragment.newInstance(
-                    getString(R.string.dialog_title_device_is_offline),
-                    getString(R.string.dialog_message_device_is_offline)
-                ).show(
-                    supportFragmentManager,
-                    DIALOG_FRAGMENT_TAG
-                )
-                stopRefreshAnimationIfNeeded()
-            }
+        if (isOnline(applicationContext)) {
+            setData()
+        } else {
+            AlertDialogFragment.newInstance(
+                getString(R.string.dialog_title_device_is_offline),
+                getString(R.string.dialog_message_device_is_offline)
+            ).show(
+                supportFragmentManager,
+                DIALOG_FRAGMENT_TAG
+            )
+            stopRefreshAnimationIfNeeded()
         }
     }
 
@@ -88,10 +81,6 @@ class DescriptionActivity : AppCompatActivity() {
                 onStart = {},
                 onSuccess = { result ->
                     imageView.setImageDrawable(result)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        val blurEffect = RenderEffect.createBlurEffect(15f, 0f, Shader.TileMode.MIRROR)
-                        imageView.setRenderEffect(blurEffect)
-                    }
                 },
                 onError = {
                     imageView.setImageResource(R.drawable.ic_load_error_vector)
@@ -105,7 +94,6 @@ class DescriptionActivity : AppCompatActivity() {
     companion object {
 
         private const val DIALOG_FRAGMENT_TAG = "3ab3573f-e010-47c2-adc7-e46963ed5d23"
-
         private const val WORD_EXTRA = "dc7ca4ed-c8d9-4666-b5c7-9af225e839d9"
         private const val DESCRIPTION_EXTRA = "8ebbb96f-b57b-4ed8-b562-532b9490c58f"
         private const val URL_EXTRA = "2818a79c-2368-4548-b1ca-0910e237d014"

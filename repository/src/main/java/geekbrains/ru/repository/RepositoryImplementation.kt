@@ -1,12 +1,11 @@
 package geekbrains.ru.repository
 
-import geekbrains.ru.model.data.dto.SearchResultDto
+import geekbrains.ru.model.data.DataModel
 
+class RepositoryImplementation(private val dataSource: DataSource<List<DataModel>>) :
+    Repository<List<DataModel>> {
 
-class RepositoryImplementation(private val dataSource: DataSource<List<SearchResultDto>>) :
-    Repository<List<SearchResultDto>> {
-
-    override suspend fun getData(word: String): List<SearchResultDto> {
+    override suspend fun getData(word: String): List<DataModel> {
         return dataSource.getData(word)
     }
 }

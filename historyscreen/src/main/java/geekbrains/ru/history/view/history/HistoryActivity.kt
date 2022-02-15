@@ -4,8 +4,8 @@ import android.os.Bundle
 import geekbrains.ru.core.BaseActivity
 import geekbrains.ru.history.databinding.ActivityHistoryBinding
 import geekbrains.ru.model.data.AppState
-import geekbrains.ru.model.data.userdata.DataModel
-import org.koin.android.scope.currentScope
+import geekbrains.ru.model.data.DataModel
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class HistoryActivity : BaseActivity<AppState, HistoryInteractor>() {
 
@@ -35,9 +35,9 @@ class HistoryActivity : BaseActivity<AppState, HistoryInteractor>() {
         if (binding.historyActivityRecyclerview.adapter != null) {
             throw IllegalStateException("The ViewModel should be initialised first")
         }
-        val viewModel: HistoryViewModel by currentScope.inject()
+        val viewModel: HistoryViewModel by viewModel()
         model = viewModel
-        model.subscribe().observe(this@HistoryActivity, { renderData(it) })
+        model.subscribe().observe(this@HistoryActivity) { renderData(it) }
     }
 
     private fun initViews() {
