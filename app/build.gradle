@@ -5,6 +5,7 @@ apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion Config.compile_sdk
+    buildToolsVersion "31.0.0"
     defaultConfig {
         applicationId Config.application_id
         minSdkVersion Config.min_sdk
@@ -48,7 +49,6 @@ dependencies {
 
     //Koin for Android
     implementation Koin.koin_android
-    implementation Koin.koin_view_model
 
     //Room
     implementation Room.runtime

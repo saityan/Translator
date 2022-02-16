@@ -15,7 +15,7 @@ import geekbrains.ru.translator.utils.convertMeaningsToString
 import geekbrains.ru.translator.view.descriptionscreen.DescriptionActivity
 import geekbrains.ru.translator.view.main.adapter.MainAdapter
 import geekbrains.ru.utils.network.isOnline
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val BOTTOM_SHEET_FRAGMENT_DIALOG_TAG = "8133f887-09ac-4bc7-aa48-5b538d171c26"
 private const val SLIDE_LEFT_DURATION = 1000L

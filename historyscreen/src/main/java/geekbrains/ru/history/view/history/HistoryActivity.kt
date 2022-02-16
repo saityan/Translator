@@ -5,7 +5,7 @@ import geekbrains.ru.core.BaseActivity
 import geekbrains.ru.history.databinding.ActivityHistoryBinding
 import geekbrains.ru.model.data.AppState
 import geekbrains.ru.model.data.DataModel
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HistoryActivity : BaseActivity<AppState, HistoryInteractor>() {
 
