@@ -1,11 +1,11 @@
 buildscript {
     repositories {
         google()
-        mavenCentral()
+        jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.1'
+        classpath 'com.android.tools.build:gradle:4.2.2'
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21'
     }
 }
@@ -13,32 +13,7 @@ buildscript {
 allprojects {
     repositories {
         google()
-        mavenCentral()
-    }
-}
-
-//For all subprojects - generate compileSdkVersion, minSdkVersion, targetSdkVersion and Java compatibility
-subprojects {
-    afterEvaluate { project ->
-        if (project.plugins.findPlugin('android') ?: project.plugins.findPlugin('android-library')) {
-            android {
-                compileSdkVersion Config.compile_sdk
-
-                buildFeatures {
-                    viewBinding true
-                }
-
-                defaultConfig {
-                    minSdkVersion Config.min_sdk
-                    targetSdkVersion Config.target_sdk
-                }
-
-                compileOptions {
-                    sourceCompatibility Config.java_version
-                    targetCompatibility Config.java_version
-                }
-            }
-        }
+        jcenter()
     }
 }
 

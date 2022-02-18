@@ -1,53 +1,30 @@
 package geekbrains.ru.translator.utils
 
-import geekbrains.ru.model.data.AppState
-import geekbrains.ru.model.data.DataModel
-import geekbrains.ru.model.data.Meanings
+import geekbrains.ru.translator.model.data.AppState
+import geekbrains.ru.translator.model.data.DataModel
+import geekbrains.ru.translator.model.data.Meanings
 
-fun parseOnlineSearchResults(data: AppState): AppState {
-    return AppState.Success(mapResult(data, true))
-}
-
-private fun mapResult(
-    data: AppState,
-    isOnline: Boolean
-): List<DataModel> {
+fun parseSearchResults(data: AppState): AppState {
     val newSearchResults = arrayListOf<DataModel>()
     when (data) {
         is AppState.Success -> {
-            getSuccessResultData(data, isOnline, newSearchResults)
-        }
-    }
-    return newSearchResults
-}
-
-private fun getSuccessResultData(
-    data: AppState.Success,
-    isOnline: Boolean,
-    newDataModels: ArrayList<DataModel>
-) {
-    val dataModels: List<DataModel> = data.data as List<DataModel>
-    if (dataModels.isNotEmpty()) {
-        if (isOnline) {
-            for (searchResult in dataModels) {
-                parseOnlineResult(searchResult, newDataModels)
-            }
-        } else {
-            for (searchResult in dataModels) {
-                newDataModels.add(DataModel(searchResult.text, arrayListOf()))
+            val searchResults = data.data
+            if (!searchResults.isNullOrEmpty()) {
+                for (searchResult in searchResults) {
+                    parseResult(searchResult, newSearchResults)
+                }
             }
         }
     }
+
+    return AppState.Success(newSearchResults)
 }
 
-private fun parseOnlineResult(
-    dataModel: DataModel,
-    newDataModels: ArrayList<DataModel>
-) {
+private fun parseResult(dataModel: DataModel, newDataModels: ArrayList<DataModel>) {
     if (!dataModel.text.isNullOrBlank() && !dataModel.meanings.isNullOrEmpty()) {
         val newMeanings = arrayListOf<Meanings>()
-        for (meaning in dataModel.meanings!!) {
-            if (meaning.translation != null && !meaning.translation!!.translation.isNullOrBlank()) {
+        for (meaning in dataModel.meanings) {
+            if (meaning.translation != null && !meaning.translation.translation.isNullOrBlank()) {
                 newMeanings.add(Meanings(meaning.translation, meaning.imageUrl))
             }
         }

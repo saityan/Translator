@@ -1,26 +1,21 @@
 package geekbrains.ru.translator.view.main
 
-import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import geekbrains.ru.core.BaseActivity
-import geekbrains.ru.history.view.history.HistoryActivity
-import geekbrains.ru.model.data.AppState
-import geekbrains.ru.model.data.DataModel
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import geekbrains.ru.translator.R
 import geekbrains.ru.translator.databinding.ActivityMainBinding
+import geekbrains.ru.translator.model.data.AppState
+import geekbrains.ru.translator.model.data.DataModel
 import geekbrains.ru.translator.utils.convertMeaningsToString
+import geekbrains.ru.translator.utils.network.isOnline
+import geekbrains.ru.translator.view.base.BaseActivity
 import geekbrains.ru.translator.view.descriptionscreen.DescriptionActivity
 import geekbrains.ru.translator.view.main.adapter.MainAdapter
-import geekbrains.ru.utils.network.isOnline
-import org.koin.androidx.viewmodel.ext.android.viewModel
-
-private const val BOTTOM_SHEET_FRAGMENT_DIALOG_TAG = "8133f887-09ac-4bc7-aa48-5b538d171c26"
-private const val SLIDE_LEFT_DURATION = 1000L
-private const val COUNTDOWN_DURATION = 2000L
-private const val COUNTDOWN_INTERVAL = 1000L
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity<AppState, MainInteractor>() {
 
@@ -41,7 +36,7 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
                         this@MainActivity,
                         data.text!!,
                         convertMeaningsToString(data.meanings!!),
-                        data.meanings!![0].imageUrl
+                        data.meanings[0].imageUrl
                     )
                 )
             }
@@ -62,27 +57,39 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         iniViewModel()
         initViews()
     }
 
-    override fun setDataToAdapter(data: List<DataModel>) {
-        adapter.setData(data)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.history_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_history -> {
-                startActivity(Intent(this, HistoryActivity::class.java))
-                true
+    override fun renderData(appState: AppState) {
+        when (appState) {
+            is AppState.Success -> {
+                showViewWorking()
+                val data = appState.data
+                if (data.isNullOrEmpty()) {
+                    showAlertDialog(
+                        getString(R.string.dialog_tittle_sorry),
+                        getString(R.string.empty_server_response_on_success)
+                    )
+                } else {
+                    adapter.setData(data)
+                }
             }
-            else -> super.onOptionsItemSelected(item)
+            is AppState.Loading -> {
+                showViewLoading()
+                if (appState.progress != null) {
+                    binding.progressBarHorizontal.visibility = VISIBLE
+                    binding.progressBarRound.visibility = GONE
+                    binding.progressBarHorizontal.progress = appState.progress
+                } else {
+                    binding.progressBarHorizontal.visibility = GONE
+                    binding.progressBarRound.visibility = VISIBLE
+                }
+            }
+            is AppState.Error -> {
+                showViewWorking()
+                showAlertDialog(getString(R.string.error_stub), appState.error.message)
+            }
         }
     }
 
@@ -92,11 +99,25 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
         }
         val viewModel: MainViewModel by viewModel()
         model = viewModel
-        model.subscribe().observe(this@MainActivity, { renderData(it) })
+        model.subscribe().observe(this@MainActivity, Observer<AppState> { renderData(it) })
     }
 
     private fun initViews() {
         binding.searchFab.setOnClickListener(fabClickListener)
+        binding.mainActivityRecyclerview.layoutManager = LinearLayoutManager(applicationContext)
         binding.mainActivityRecyclerview.adapter = adapter
+    }
+
+    private fun showViewWorking() {
+        binding.loadingFrameLayout.visibility = GONE
+    }
+
+    private fun showViewLoading() {
+        binding.loadingFrameLayout.visibility = VISIBLE
+    }
+
+    companion object {
+        private const val BOTTOM_SHEET_FRAGMENT_DIALOG_TAG =
+            "74a54328-5d62-46bf-ab6b-cbf5fgt0-092395"
     }
 }

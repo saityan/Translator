@@ -14,7 +14,6 @@
             android:theme="@style/AppTheme"
             android:name=".application.TranslatorApp">
         <activity android:name=".view.main.MainActivity"
-            android:exported="true"
                   android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -26,4 +25,5 @@
                 android:name=".view.descriptionscreen.DescriptionActivity"
                 android:screenOrientation="portrait"/>
     </application>
+
 </manifest>
