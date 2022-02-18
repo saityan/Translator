@@ -15,7 +15,6 @@ import geekbrains.ru.translator.utils.getEmptyString
 import kotlinx.android.synthetic.main.search_dialog_fragment.*
 
 class SearchDialogFragment : BottomSheetDialogFragment() {
-
     private lateinit var searchEditText: TextInputEditText
     private lateinit var clearTextImageView: ImageView
     private lateinit var searchButton: TextView
