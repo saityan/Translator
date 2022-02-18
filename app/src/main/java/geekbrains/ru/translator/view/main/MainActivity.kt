@@ -15,7 +15,7 @@ import geekbrains.ru.translator.utils.network.isOnline
 import geekbrains.ru.translator.view.base.BaseActivity
 import geekbrains.ru.translator.view.descriptionscreen.DescriptionActivity
 import geekbrains.ru.translator.view.main.adapter.MainAdapter
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity<AppState, MainInteractor>() {
 
