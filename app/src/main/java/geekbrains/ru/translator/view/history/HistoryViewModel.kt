@@ -1,14 +1,12 @@
-package geekbrains.ru.translator.view.main
+package geekbrains.ru.translator.view.history
 
 import androidx.lifecycle.LiveData
 import geekbrains.ru.translator.model.data.AppState
-import geekbrains.ru.translator.utils.parseOnlineSearchResults
+import geekbrains.ru.translator.utils.parseLocalSearchResults
 import geekbrains.ru.translator.viewmodel.BaseViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class MainViewModel(private val interactor: MainInteractor) :
+class HistoryViewModel(private val interactor: HistoryInteractor) :
     BaseViewModel<AppState>() {
 
     private val liveDataForViewToObserve: LiveData<AppState> = _mutableLiveData
@@ -23,8 +21,8 @@ class MainViewModel(private val interactor: MainInteractor) :
         viewModelCoroutineScope.launch { startInteractor(word, isOnline) }
     }
 
-    private suspend fun startInteractor(word: String, isOnline: Boolean) = withContext(Dispatchers.IO) {
-        _mutableLiveData.postValue(parseOnlineSearchResults(interactor.getData(word, isOnline)))
+    private suspend fun startInteractor(word: String, isOnline: Boolean) {
+        _mutableLiveData.postValue(parseLocalSearchResults(interactor.getData(word, isOnline)))
     }
 
     override fun handleError(error: Throwable) {
@@ -32,7 +30,7 @@ class MainViewModel(private val interactor: MainInteractor) :
     }
 
     override fun onCleared() {
-        _mutableLiveData.value = AppState.Success(null)//TODO Workaround. Set View to original state
+        _mutableLiveData.value = AppState.Success(null)//Set View to original state in onStop
         super.onCleared()
     }
 }

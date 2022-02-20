@@ -2,19 +2,21 @@ package geekbrains.ru.translator.view.descriptionscreen
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.RenderEffect
-import android.graphics.Shader
-import android.os.Build
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import coil.ImageLoader
-import coil.request.LoadRequest
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import geekbrains.ru.translator.R
 import geekbrains.ru.translator.databinding.ActivityDescriptionBinding
-import geekbrains.ru.utils.network.OnlineLiveData
-import geekbrains.ru.utils.ui.AlertDialogFragment
+import geekbrains.ru.translator.utils.network.isOnline
+import geekbrains.ru.translator.utils.ui.AlertDialogFragment
 
 class DescriptionActivity : AppCompatActivity() {
 
@@ -53,62 +55,72 @@ class DescriptionActivity : AppCompatActivity() {
         if (imageLink.isNullOrBlank()) {
             stopRefreshAnimationIfNeeded()
         } else {
-            useCoilToLoadPhoto(binding.descriptionImageview, imageLink)
+            useGlideToLoadPhoto(binding.descriptionImageview, imageLink)
         }
     }
 
+    private fun useGlideToLoadPhoto(imageView: ImageView, imageLink: String) {
+        Glide.with(imageView)
+            .load("https:$imageLink")
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    stopRefreshAnimationIfNeeded()
+                    imageView.setImageResource(R.drawable.ic_load_error_vector)
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    stopRefreshAnimationIfNeeded()
+                    return false
+                }
+            })
+            .apply(
+                RequestOptions()
+                    .placeholder(R.drawable.ic_no_photo_vector)
+                    .centerCrop()
+            )
+            .into(imageView)
+    }
+
     private fun startLoadingOrShowError() {
-        OnlineLiveData(this).observe(
-            this@DescriptionActivity
-        ) {
-            if (it) {
-                setData()
-            } else {
-                AlertDialogFragment.newInstance(
-                    getString(R.string.dialog_title_device_is_offline),
-                    getString(R.string.dialog_message_device_is_offline)
-                ).show(
-                    supportFragmentManager,
-                    DIALOG_FRAGMENT_TAG
-                )
-                stopRefreshAnimationIfNeeded()
-            }
+        if (isOnline(applicationContext)) {
+            setData()
+        } else {
+            AlertDialogFragment.newInstance(
+                getString(R.string.dialog_title_device_is_offline),
+                getString(R.string.dialog_message_device_is_offline)
+            ).show(
+                supportFragmentManager,
+                DIALOG_FRAGMENT_TAG
+            )
+            stopRefreshAnimationIfNeeded()
         }
     }
 
     private fun stopRefreshAnimationIfNeeded() {
-        if (binding.descriptionScreenSwipeRefreshLayout.isRefreshing)
+        if (binding.descriptionScreenSwipeRefreshLayout.isRefreshing) {
             binding.descriptionScreenSwipeRefreshLayout.isRefreshing = false
+        }
     }
 
-    private fun useCoilToLoadPhoto(imageView: ImageView, imageLink: String) {
-        val request = LoadRequest.Builder(this)
-            .data("https:$imageLink")
-            .target(
-                onStart = {},
-                onSuccess = { result ->
-                    imageView.setImageDrawable(result)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        val blurEffect = RenderEffect.createBlurEffect(15f, 0f, Shader.TileMode.MIRROR)
-                        imageView.setRenderEffect(blurEffect)
-                    }
-                },
-                onError = {
-                    imageView.setImageResource(R.drawable.ic_load_error_vector)
-                }
-            )
-            .build()
 
-        ImageLoader(this).execute(request)
-    }
 
     companion object {
-
-        private const val DIALOG_FRAGMENT_TAG = "3ab3573f-e010-47c2-adc7-e46963ed5d23"
-
-        private const val WORD_EXTRA = "dc7ca4ed-c8d9-4666-b5c7-9af225e839d9"
-        private const val DESCRIPTION_EXTRA = "8ebbb96f-b57b-4ed8-b562-532b9490c58f"
-        private const val URL_EXTRA = "2818a79c-2368-4548-b1ca-0910e237d014"
+        private const val DIALOG_FRAGMENT_TAG = "8c7dff51-9769-4f6d-bbee-a3896085e76e"
+        private const val WORD_EXTRA = "f76a288a-5dcc-43f1-ba89-7fe1d53f63b0"
+        private const val DESCRIPTION_EXTRA = "0eeb92aa-520b-4fd1-bb4b-027fbf963d9a"
+        private const val URL_EXTRA = "6e4b154d-e01f-4953-a404-639fb3bf7281"
 
         fun getIntent(
             context: Context,

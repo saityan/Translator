@@ -11,11 +11,10 @@ import android.widget.TextView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.textfield.TextInputEditText
 import geekbrains.ru.translator.R
-import geekbrains.ru.utils.getEmptyString
+import geekbrains.ru.translator.utils.getEmptyString
 import kotlinx.android.synthetic.main.search_dialog_fragment.*
 
 class SearchDialogFragment : BottomSheetDialogFragment() {
-
     private lateinit var searchEditText: TextInputEditText
     private lateinit var clearTextImageView: ImageView
     private lateinit var searchButton: TextView
