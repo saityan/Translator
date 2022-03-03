@@ -48,6 +48,7 @@ dependencies {
 
     //Koin for Android
     implementation Koin.koin_android
+    implementation Koin.koin_view_model
 
     //Room
     implementation Room.runtime
