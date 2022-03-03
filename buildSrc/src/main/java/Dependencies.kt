@@ -42,7 +42,7 @@ object Versions {
     const val adapterCoroutines = "0.9.2"
 
     //Koin
-    const val koinAndroid = "3.1.5"
+    const val koinAndroid = "3.0.2"
 
     //Coil
     const val coil = "0.11.0"
