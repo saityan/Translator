@@ -1,4 +1,4 @@
-package geekbrains.ru.model.room
+package geekbrains.ru.repository.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

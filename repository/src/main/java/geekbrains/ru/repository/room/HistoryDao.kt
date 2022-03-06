@@ -1,6 +1,7 @@
-package geekbrains.ru.model.room
+package geekbrains.ru.repository.room
 
 import androidx.room.*
+import geekbrains.ru.repository.room.HistoryEntity
 
 @Dao
 interface HistoryDao {

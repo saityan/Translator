@@ -2,7 +2,7 @@ package geekbrains.ru.repository
 
 import geekbrains.ru.model.data.AppState
 import geekbrains.ru.model.data.dto.SearchResultDto
-import geekbrains.ru.model.room.HistoryEntity
+import geekbrains.ru.repository.room.HistoryEntity
 
 fun mapHistoryEntityToSearchResult(list: List<HistoryEntity>): List<SearchResultDto> {
     val searchResult = ArrayList<SearchResultDto>()

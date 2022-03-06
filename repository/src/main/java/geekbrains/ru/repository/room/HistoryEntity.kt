@@ -1,4 +1,4 @@
-package geekbrains.ru.model.room
+package geekbrains.ru.repository.room
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

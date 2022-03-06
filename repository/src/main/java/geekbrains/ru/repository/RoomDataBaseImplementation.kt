@@ -2,7 +2,7 @@ package geekbrains.ru.repository
 
 import geekbrains.ru.model.data.AppState
 import geekbrains.ru.model.data.dto.SearchResultDto
-import geekbrains.ru.model.room.HistoryDao
+import geekbrains.ru.repository.room.HistoryDao
 
 class RoomDataBaseImplementation(private val historyDao: HistoryDao) :
     DataSourceLocal<List<SearchResultDto>> {

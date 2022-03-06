@@ -5,7 +5,7 @@ import geekbrains.ru.history.view.history.HistoryActivity
 import geekbrains.ru.history.view.history.HistoryInteractor
 import geekbrains.ru.history.view.history.HistoryViewModel
 import geekbrains.ru.model.data.dto.SearchResultDto
-import geekbrains.ru.model.room.HistoryDataBase
+import geekbrains.ru.repository.room.HistoryDataBase
 import geekbrains.ru.repository.*
 import geekbrains.ru.translator.view.main.MainActivity
 import geekbrains.ru.translator.view.main.MainInteractor
