@@ -39,7 +39,7 @@ private fun mapResult(
     return newSearchResults
 }
 
-private fun getSuccessResultData(
+fun getSuccessResultData(
     data: AppState.Success,
     isOnline: Boolean,
     newSearchDataModels: ArrayList<DataModel>
